@@ -1,0 +1,17 @@
+# Build and release artifacts
+build/
+release/
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Node.js
+node_modules/
+
+# Wine
+wine-prefix/
