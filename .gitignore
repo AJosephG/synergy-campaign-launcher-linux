@@ -1,6 +1,7 @@
 # Build and release artifacts
 build/
 release/
+auto/
 
 # Ignore these folders as it isn't needed in release
 src/wine/wine-sccm/
