@@ -1,6 +1,7 @@
 
 # synergy-campaign-launcher-linux
 
+>**WARNING: No available releases at this time: sorry**
 
 >**This project is independent of and not affiliated, endorsed by, or representative of/with Synergy or the community**
 
@@ -116,7 +117,6 @@ This ensures that the latest bug fixes for different wine versions are added.
 
 If the launcher reports that StarCraft II is already running:
 - Run the cleanup script included in the release to remove leftover `.lock`, `.tmp`, or `.flag` files
-- Make sure the SC2 install path in `config/config.json` matches your actual Lutris prefix
 - Check that Wine is correctly installed and matches the architecture of your SC2 install
 
 Logs are saved to `~/.local/share/sccm-launcher/logs/` and can be uploaded to GitHub for help.

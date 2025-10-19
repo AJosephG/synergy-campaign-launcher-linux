@@ -2,6 +2,10 @@
 build/
 release/
 
+# Ignore these folders as it isn't needed in release
+src/wine/wine-sccm/
+scripts/dev
+
 # Logs
 *.log
 
@@ -12,6 +16,3 @@ __pycache__/
 
 # Node.js
 node_modules/
-
-# Wine
-wine-prefix/
