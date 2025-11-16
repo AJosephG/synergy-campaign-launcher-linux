@@ -1,63 +1,47 @@
-
 # synergy-campaign-launcher-linux
-
->**WARNING: No available releases at this time: sorry**
 
 >**This project is independent of and not affiliated, endorsed by, or representative of/with Synergy or the community**
 
-This project provides a fully repatched method of running [Synergy's Campaign launcher](https://github.com/R-P-S/SC2CampaignLauncher) on specifically Linux.
+this lets you run the [synergy campaign launcher](https://github.com/R-P-S/SC2CampaignLauncher) on linux using a pre‑patched proton ge. it's meant to be simple and not fussy.
 
-This is because the current versions of the launcher are incompatible with `wine` in several ways.
+this is because newer versions of the launcher don't play nice with plain `wine` in a few ways.
 
-Make sure to follow the [#How to use](#how-to-use) section for your distro before making [bug reports](#bug-reports).
+make sure to follow the [#how to use](#how-to-use) section for your distro before making [bug reports](#bug-reports). saves us both time :)
 
-This project will most likely deprecate once `wine` is updated to work with this application.
+## What is this?
+
+the python build used by the launcher needs windows process state snapshot (pss) apis that standard wine/proton doesn't implement. this repo ships a pre‑patched proton ge 9-20 with tiny stub pss functions (`PssQuerySnapshot`, `PssFreeSnapshot`, `PssCaptureSnapshot`) so the launcher actually runs.
+
+tl;dr: patched proton ge with pss stubs, so it works.
 
 # How to use
 
 Make sure these dependencies are met:
-- Latest version of `wine`, `wine-mono`, `wine-gecko` and `winetricks` (latest or staging)
-- `lutris` (optional if using a different version of `wine` for `StarCraft2`)
-- `jq` (only needed if you have issues related to `JSON` parsing)
+- Steam installed (for compatibility tools directory structure)
+- `lutris` (recommended for easy game management)
+- StarCraft II installed via Battle.net
+- SC2 Synergy Campaign Launcher files
 
-### apt based distros (Debian / Ubuntu):
+## Installation
 
-Required
+### Option 1: Download from Releases (Recommended)
 
-> `sudo apt update`<br>
->`sudo apt install --no-install-recommends -y bash coreutils findutils procps grep sed gawk git tee`<br>
->`sudo apt install -y wine winetricks`<br>
+1. Download `GE-Proton-PSS-Patched.tar.gz` from the [Releases](https://github.com/AJosephG/synergy-campaign-launcher-linux/releases) page
 
-Optional
+2. Extract to Steam compatibility tools directory:
+>`mkdir -p ~/.steam/compatibilitytools.d`<br>
+>`tar xzf GE-Proton-PSS-Patched.tar.gz -C ~/.steam/compatibilitytools.d`
 
-> `sudo apt install -y wine64 wine32 wine-mono wine-gecko lutris`<br>
+### Option 2: Use the installer script
 
-NOTE: You may need to enable the WineHQ repository to install `wine64` and `wine32`.
+1. Clone this repository:
+>`git clone https://github.com/AJosephG/synergy-campaign-launcher-linux.git`<br>
+>`cd synergy-campaign-launcher-linux`
 
-### dnf/yum (Fedora / CentOS):
+2. Download the archive from Releases and place it in the repository directory
 
-Required
-
-> `sudo dnf install -y bash coreutils findutils procps-ng grep sed gawk git`<br>
-> `sudo dnf install -y wine winetricks`<br>
-
-Optional 
-
-> `sudo dnf install -y wine-mono wine-gecko lutris jq`<br>
-
-### pacman (Arch / Manjaro)
-
-Required
-
-> `sudo pacman -Syu` <br>
-> `sudo pacman -S --needed bash coreutils findutils procps-ng grep sed gawk git` <br>
-> `sudo pacman -S --needed wine winetricks` <br>
-
-Optional
-
-> `sudo pacman -S --needed wine-mono wine-gecko lutris jq` <br>
-
-NOTE: use AUR (yay) for `staging` or `dev` `wine`. ex. `wine-staging`
+3. Run the installer:
+>`./install.sh`
 
 ## Starcraft 2
 
@@ -81,45 +65,57 @@ Download the most recent version of `lutris` and make sure it set up according t
 - Follow Instructions
 - Launch game and remember the directory
 
-### Steam / Proton
+## Usage with Lutris
 
-Steam/Proton may work for some users, but Lutris is recommended for easier prefix management and compatibility with the launcher.
+1. Open Lutris
+2. Right-click your SC2 installation → Configure
+3. Under "Runner options":
+   - Wine version: Select `GE-Proton-PSS-Patched`
+   - Wine prefix: Set to your Battle.net prefix (e.g., `~/Games/battlenet`)
+4. Left click on the SC2 installation and click the Arrow next to the Wine Icon
+5. Click 'Run EXE in prefix'
+6. Navigate to the Campaign .exe file
 
-Steam: (https://store.steampowered.com/about/)
-
-Proton: (https://github.com/GloriousEggroll/proton-ge-custom)
-
-## Git
-
-1. Clone the repo 
->`git clone https://github.com/AJosephG/synergy-campaign-launcher-linux.git`
-
-2. Enter Directory 
->`cd synergy-campaign-launcher-linux`
-
-3. Install (perserves executable and installs launcher to your user bin)
->`install -Dm755 src/scripts/sccm-launcher.sh ~/.local/bin/sccm-launcher`
-
-4. Run
->`~/.local/bin/sccm-launcher`
+You can also add this as a game in lutris and follow the same steps to easily access and launch the campaign launcher without the script.
 
 
-## Release
+### Steam
 
-1. Download the latest `sccm-launcher.tar.gz` from the releases page.
-This ensures that the latest bug fixes for different wine versions are added.
+1. Click add game
+2. Navigate to the .exe
+3. Select option, then check the 'force use of specific compatibility tool'
+4. Select the tool as 'GE-Proton-PSS-Patched'
+5. Select play
 
-2. Extract `.tar.gz` file. Locate the script file inside the extracted folder.
+## Why Proton GE instead of Wine?
 
-3. Run by either double clicking on the `.sh` or by using `./sccm-launcher.sh`
+The SC2 Switcher program requires Proton GE's specific configuration to properly load maps. Standard Wine builds do not work correctly even with PSS stubs. Both the campaign launcher and switcher must run under this patched Proton GE.
+
+## Technical Details
+
+This package includes:
+- **Base**: GE-Proton 9-20 (last stable version before gstreamer issues)
+- **Patch**: PSS API stubs in `kernel32.dll` (both 32-bit and 64-bit)
+- **Modified files**:
+  - `files/lib/wine/i386-unix/kernel32.dll.so`
+  - `files/lib/wine/i386-windows/kernel32.dll`
+  - `files/lib64/wine/x86_64-unix/kernel32.dll.so`
+  - `files/lib64/wine/x86_64-windows/kernel32.dll`
 
 ## Troubleshooting
 
-If the launcher reports that StarCraft II is already running:
-- Run the cleanup script included in the release to remove leftover `.lock`, `.tmp`, or `.flag` files
-- Check that Wine is correctly installed and matches the architecture of your SC2 install
+**"Prefix has an invalid version" warning**
+- This is expected when downgrading from a newer Proton version
+- The prefix will be automatically updated to work with GE-Proton 9-20
 
-Logs are saved to `~/.local/share/sccm-launcher/logs/` and can be uploaded to GitHub for help.
+**Campaign launcher doesn't start**
+- Verify the Wine prefix contains your Battle.net installation
+- Check that `SC2CampaignLauncher.exe` exists in `drive_c/` of your prefix
+- Ensure Lutris is using `GE-Proton-PSS-Patched` as the runner
+
+**Maps don't load**
+- You must use the patched Proton GE, not regular Wine
+- Verify SC2Switcher is also launching through the same Proton version
 
 ## Bug Reports
 
@@ -136,15 +132,14 @@ OS is required in the report. This can be gotten different ways, most commonly t
 
 Don't include personal info.
 
+## License
 
+- Proton GE: Multiple licenses (see included LICENSE files in the Proton directory)
+- PSS patches: MIT License (see repository LICENSE)
 
-## Folder Overview
+## Credits
 
-- `src/`: Main source code
-- `src/wine/` Patched Wine Version
-- `src/scripts/` Launcher scripts
-- `config/`: Bundled configuration files
-- `scripts/`: Debugging and development scripts
-- `release/`: Packaged builds and release artifacts
-- `build/`: Temporary wine/script build files
-
+- GloriousEggroll for Proton GE
+- SC2 Synergy Campaign creators
+- Wine project
+- Worked on by a few independent people :3

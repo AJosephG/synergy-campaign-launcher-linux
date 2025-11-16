@@ -3,20 +3,46 @@ build/
 release/
 auto/
 
-# Ignore these folders as it isn't needed in release
+# Ignore these folders as they aren't needed in release
 src/wine/wine-sccm/
-scripts/dev
+src/wine/wine-sccm-custom/
+scripts/dev/
+
+# Large binary files (distribute via GitHub Releases)
+*.tar.gz
+GE-Proton-PSS-Patched/
+GE-Proton-PSS-Patched.tar.gz
 
 # Logs
 *.log
+logs/
+
+# Temporary files
+*.tmp
+*.swp
+*~
+.DS_Store
 
 # Python
 __pycache__/
 *.pyc
+*.pyo
 .env
+venv/
+env/
 
 # Node.js
 node_modules/
 
-# extracted proton directory (use archive instead)
-GE-Proton-PSS-Patched/
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+
+# System files
+Thumbs.db
+desktop.ini
+
+# Setup summary (internal documentation)
+SETUP-SUMMARY.txt
+DISTRIBUTION.md
