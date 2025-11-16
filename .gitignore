@@ -17,3 +17,6 @@ __pycache__/
 
 # Node.js
 node_modules/
+
+# extracted proton directory (use archive instead)
+GE-Proton-PSS-Patched/
